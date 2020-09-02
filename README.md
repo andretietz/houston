@@ -1,6 +1,8 @@
 # Houston
 A kotlin library to abstract tracking tools.
 
+[![Build Status](https://app.bitrise.io/app/bd134453be936cfc/status.svg?token=grZzflNzAcMfNMJymNRVHw&branch=master)](https://app.bitrise.io/app/bd134453be936cfc)
+
 ## How to use
 ### Add the libary from `mavenCentral`
 ```groovy
