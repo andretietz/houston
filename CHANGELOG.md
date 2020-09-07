@@ -1,4 +1,4 @@
 # 1.0.0
-First Release
+* `value` within a message can be null.
 # 0.1.0 Prerelease
 Initial pre-release

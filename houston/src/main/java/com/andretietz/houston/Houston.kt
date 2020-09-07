@@ -60,6 +60,9 @@ class Houston private constructor(
       }
     }
 
+    /**
+     * Creates a [Builder] to initialize the library.
+     */
     @JvmStatic
     fun init() = Builder()
   }

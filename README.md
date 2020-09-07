@@ -22,13 +22,14 @@ Houston.init()
 Example for login success or not:
 ```kotlin
 ...
-{ loginSuccess: Boolean -> 
+{ loginSuccess: Boolean, data: String? -> 
 
   // a string to identify the event (id: String)
   Houston.createMessage(LoginTracker.LOGIN) 
-    // optional argument(s) (key: String, value: String)
+    // optional argument(s) (key: String, value: String?)
     .with(LoginTracker.LOGIN_KEY_SUCCESS, loginSuccess.toString())
-    .with(...)
+    // the value can be nullable. in this case it will not be added.
+    .with(LoginTracker.LOGIN_KEY_DATA, data)
     ...
     .over()
   ...

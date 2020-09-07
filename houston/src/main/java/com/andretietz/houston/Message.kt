@@ -33,8 +33,12 @@ data class Message internal constructor(val id: String) {
   /**
    * Add key-value pairs as optional data to the message object.
    */
-  fun with(key: String, value: String): Message = apply {
-    _data[key] = value
+  fun with(key: String, value: String?): Message = apply {
+    if(value != null) {
+      _data[key] = value
+    } else {
+      _data.remove(key)
+    }
   }
 
   /**

@@ -14,8 +14,13 @@ class HoustonTest {
 
     msg.with(KEY, OTHER_VALUE)
 
-    assert(msg.data[KEY] == OTHER_VALUE)
     assert(msg.id == ID)
+    assert(msg.data[KEY] == OTHER_VALUE)
+
+    msg.with(KEY, null)
+
+    assert(msg.data[KEY] == null)
+
   }
 
   @Test
@@ -60,9 +65,9 @@ class HoustonTest {
 
   companion object {
     const val ID = "I believe we've had a problem here."
-    const val KEY = "some"
-    const val VALUE = "value"
-    const val OTHER_VALUE = "other value"
+    const val KEY = "problem"
+    const val VALUE = "explosion and rupture of oxygen tank 2"
+    const val OTHER_VALUE = "oxygen tank 1 looses oxygen"
   }
 
 }
