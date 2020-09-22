@@ -3,6 +3,7 @@ package com.andretietz.houston
 import io.mockk.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
 class HoustonTest {
@@ -39,7 +40,7 @@ class HoustonTest {
   }
 
   @Test
-  fun `Sending a message to multiple receivers`() = runBlocking {
+  fun `Sending a message to multiple receivers`() = runBlockingTest {
     val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
     val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
