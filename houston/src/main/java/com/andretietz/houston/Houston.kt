@@ -74,7 +74,7 @@ class Houston private constructor(
     /**
      * Creates a [Builder] to initialize the library.
      *
-     * @param coroutineScope used for
+     * @param coroutineScope used for reporting async.
      */
     @JvmStatic
     @JvmOverloads
