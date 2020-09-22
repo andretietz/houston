@@ -48,7 +48,13 @@ class Houston private constructor(
 
   internal fun sendFinally(message: Message) {
     coroutineScope.launch {
-      missionControl.forEach { it.send(message) }
+      missionControl.forEach {
+        try {
+          it.send(message)
+        } catch (error: Exception) {
+          error.printStackTrace()
+        }
+      }
     }
   }
 

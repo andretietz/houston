@@ -1,10 +1,9 @@
 package com.andretietz.houston
 
 import io.mockk.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import java.lang.IllegalStateException
 
 class HoustonTest {
 
@@ -43,6 +42,33 @@ class HoustonTest {
   fun `Sending a message to multiple receivers`() = runBlockingTest {
     val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
     val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
+    val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
+
+    Houston.init()
+      .add(jackRLousma)
+      .add(williamRPouge)
+      .add(vanceDBrand)
+      .launch()
+
+    Houston.send(ID)
+      .with(KEY, VALUE)
+      .over()
+
+    val message = slot<Message>()
+
+    verify(exactly = 1) { jackRLousma.send(capture(message)) }
+    verify(exactly = 1) { williamRPouge.send(capture(message)) }
+    verify(exactly = 1) { vanceDBrand.send(capture(message)) }
+
+    assert(message.captured.id == ID)
+    assert(message.captured.data[KEY] == VALUE)
+
+  }
+
+  @Test
+  fun `Sending a message and crash`() = runBlockingTest {
+    val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
+    val williamRPouge = mockk<TrackingTool> { every { send(any()) } throws IllegalStateException("An exception appeared") }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
 
     Houston.init()
