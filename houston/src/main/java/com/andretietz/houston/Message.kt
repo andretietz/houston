@@ -32,6 +32,9 @@ data class Message internal constructor(val id: String) {
 
   /**
    * Add key-value pairs as optional data to the message object.
+   *
+   * @param key you want to edit
+   * @param value if not `null` it will add the key value pair. If it is `null` it removes it.
    */
   fun with(key: String, value: String?): Message = apply {
     if(value != null) {
