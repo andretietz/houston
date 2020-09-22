@@ -12,7 +12,7 @@ implement("com.andretietz.houston:houston:x.y.z")
 Whenever you forgot to initialize it, no events will be sent. This could be used 
 e.g. to avoid tracking on a development environment. 
 ```kotlin
-Houston.init()
+Houston.init(optionalCoroutineScope)
   .add(someAnalyticsTool1) 
   .add(someAnalyticsTool2)
   .launch()
@@ -25,7 +25,7 @@ Example for login success or not:
 { loginSuccess: Boolean, data: String? -> 
 
   // a string to identify the event (id: String)
-  Houston.createMessage(LoginTracker.LOGIN) 
+  Houston.send(LoginTracker.LOGIN) 
     // optional argument(s) (key: String, value: String?)
     .with(LoginTracker.LOGIN_KEY_SUCCESS, loginSuccess.toString())
     // the value can be nullable. in this case it will not be added.
