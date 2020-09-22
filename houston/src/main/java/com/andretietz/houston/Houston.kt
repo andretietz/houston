@@ -16,6 +16,7 @@
 package com.andretietz.houston
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -72,11 +73,13 @@ class Houston private constructor(
 
     /**
      * Creates a [Builder] to initialize the library.
+     *
+     * @param coroutineScope used for
      */
     @JvmStatic
     @JvmOverloads
     fun init(
-      coroutineScope: CoroutineScope
+      coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     ) = Builder(coroutineScope)
   }
 }

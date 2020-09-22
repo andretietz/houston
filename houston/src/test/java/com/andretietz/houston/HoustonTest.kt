@@ -44,7 +44,7 @@ class HoustonTest {
     val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
 
-    Houston.init(GlobalScope)
+    Houston.init()
       .add(jackRLousma)
       .add(williamRPouge)
       .add(vanceDBrand)
