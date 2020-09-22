@@ -15,16 +15,20 @@
  */
 package com.andretietz.houston
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
 /**
  * The main library class. Initialize the library and send messages to all tracking tools.
  *
  * @param missionControl a set of all tracking tools.
  */
 class Houston private constructor(
-  private val missionControl: Set<TrackingTool>
+  private val missionControl: Set<TrackingTool>,
+  private val coroutineScope: CoroutineScope
 ) {
 
-  class Builder {
+  class Builder internal constructor(private val coroutineScope: CoroutineScope) {
     private val trackingTools: MutableSet<TrackingTool> = HashSet()
 
     /**
@@ -37,7 +41,13 @@ class Houston private constructor(
      * After adding all [TrackingTool]s, you want to initialize the library.
      */
     fun launch() {
-      INSTANCE = Houston(trackingTools)
+      INSTANCE = Houston(trackingTools, coroutineScope)
+    }
+  }
+
+  internal fun sendFinally(message: Message) {
+    coroutineScope.launch {
+      missionControl.forEach { it.send(message) }
     }
   }
 
@@ -56,7 +66,7 @@ class Houston private constructor(
     @JvmStatic
     internal fun send(message: Message) {
       if (this::INSTANCE.isInitialized) {
-        INSTANCE.missionControl.forEach { it.send(message) }
+        INSTANCE.sendFinally(message)
       }
     }
 
@@ -64,6 +74,9 @@ class Houston private constructor(
      * Creates a [Builder] to initialize the library.
      */
     @JvmStatic
-    fun init() = Builder()
+    @JvmOverloads
+    fun init(
+      coroutineScope: CoroutineScope
+    ) = Builder(coroutineScope)
   }
 }
