@@ -15,7 +15,7 @@ e.g. to avoid tracking on a development environment.
 Houston.init(optionalCoroutineScope)
   .add(someAnalyticsTool1) 
   .add(someAnalyticsTool2)
-  .launch()
+  .launch(optionalCoroutineExceptionHandler)
 ```
 
 ### Fire events
@@ -40,7 +40,7 @@ Example for login success or not:
 This is sample of an non-existing tracking tool called WhateverAnalytics, in which you create an event which you send 
 using their analytics instance.
 ```kotlin
-class WhateverAnalyticsCrewMember(private val whateverAnalytics: WhateverAnalytics) : CrewMember {
+class WhateverAnalyticsTrackingTool(private val whateverAnalytics: WhateverAnalytics) : TrackingTool {
   override fun send(message: Message) {
     val event = WhateverEvent(message.id)
     message.data.forEach { key, value ->
@@ -65,9 +65,9 @@ Initially I used this in android projects, but since it doesn't have any Android
 every Java/Kotlin project. 
 
 ## About
-The name and usage of the library have analogies to the NASA Apollo 13 mission. 
+The name and usage of the library have analogies to the NASA Space missions.
 
-A tracking tool relates to a crewmember of mission control and the application relates 
+A tracking tool relates to a crew-member of mission control and the application relates
 to a spaceship that sends data to mission control.
  
 ## LICENSE

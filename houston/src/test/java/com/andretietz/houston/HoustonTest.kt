@@ -34,9 +34,9 @@ class HoustonTest {
 
   @Test
   fun `No message is sent, when Houston not initialized`() {
-    val jackRLousma = mockk<TrackingTool> { every { send(any()) } returns Unit }
-    val williamRPouge = mockk<TrackingTool> { every { send(any()) } returns Unit }
-    val vanceDBrand = mockk<TrackingTool> { every { send(any()) } returns Unit }
+    val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
+    val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
+    val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
 
     Houston.send(ID).over()
 
@@ -61,14 +61,20 @@ class HoustonTest {
       .with(KEY, VALUE)
       .over()
 
-    val message = slot<Message>()
+    val messageFromJack = slot<Message>()
+    val messageFromWilliam = slot<Message>()
+    val messageFromVance = slot<Message>()
 
-    verify(exactly = 1) { jackRLousma.send(capture(message)) }
-    verify(exactly = 1) { williamRPouge.send(capture(message)) }
-    verify(exactly = 1) { vanceDBrand.send(capture(message)) }
+    verify(exactly = 1) { jackRLousma.send(capture(messageFromJack)) }
+    verify(exactly = 1) { williamRPouge.send(capture(messageFromWilliam)) }
+    verify(exactly = 1) { vanceDBrand.send(capture(messageFromVance)) }
 
-    assert(message.captured.id == ID)
-    assert(message.captured.data[KEY] == VALUE)
+    assert(messageFromJack.captured.id == ID)
+    assert(messageFromJack.captured.data[KEY] == VALUE)
+    assert(messageFromWilliam.captured.id == ID)
+    assert(messageFromWilliam.captured.data[KEY] == VALUE)
+    assert(messageFromVance.captured.id == ID)
+    assert(messageFromVance.captured.data[KEY] == VALUE)
 
   }
 
@@ -90,14 +96,20 @@ class HoustonTest {
       .over()
 
     // All messages should still be sent
-    val message = slot<Message>()
+    val messageFromJack = slot<Message>()
+    val messageFromWilliam = slot<Message>()
+    val messageFromVance = slot<Message>()
 
-    verify(exactly = 1) { jackRLousma.send(capture(message)) }
-    verify(exactly = 1) { williamRPouge.send(capture(message)) }
-    verify(exactly = 1) { vanceDBrand.send(capture(message)) }
+    verify(exactly = 1) { jackRLousma.send(capture(messageFromJack)) }
+    verify(exactly = 1) { williamRPouge.send(capture(messageFromWilliam)) }
+    verify(exactly = 1) { vanceDBrand.send(capture(messageFromVance)) }
 
-    assert(message.captured.id == ID)
-    assert(message.captured.data[KEY] == VALUE)
+    assert(messageFromJack.captured.id == ID)
+    assert(messageFromJack.captured.data[KEY] == VALUE)
+    assert(messageFromWilliam.captured.id == ID)
+    assert(messageFromWilliam.captured.data[KEY] == VALUE)
+    assert(messageFromVance.captured.id == ID)
+    assert(messageFromVance.captured.data[KEY] == VALUE)
   }
 
   companion object {
@@ -106,36 +118,4 @@ class HoustonTest {
     const val VALUE = "explosion and rupture of oxygen tank 2"
     const val OTHER_VALUE = "oxygen tank 1 looses oxygen"
   }
-
-  fun foo() = runBlockingTest {
-    val jackRLousma = object : TrackingTool {
-      override fun send(message: Message) {
-        println("jackRLousma - ${message.id}: ${message.data}")
-      }
-    }
-
-    val williamRPouge = object : TrackingTool {
-      override fun send(message: Message) {
-        println("williamRPouge")
-        throw java.lang.IllegalStateException()
-      }
-    }
-    val vanceDBrand = object : TrackingTool {
-      override fun send(message: Message) {
-        println("vanceDBrand - ${message.id}: ${message.data}")
-      }
-    }
-
-
-    Houston.init()
-      .add(jackRLousma)
-      .add(williamRPouge)
-      .add(vanceDBrand)
-      .launch()
-
-    Houston.send(ID)
-      .with(KEY, VALUE)
-      .over()
-  }
-
 }
