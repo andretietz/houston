@@ -44,6 +44,7 @@ class Houston private constructor(
     /**
      * After adding all [TrackingTool]s, you want to initialize the library.
      */
+    @JvmOverloads
     fun launch(errorHandler: CoroutineExceptionHandler = DEFAULT_EXCEPTION_HANDLER) {
       INSTANCE = Houston(trackingTools, coroutineScope, errorHandler)
     }
