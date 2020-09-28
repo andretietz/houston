@@ -15,9 +15,11 @@
  */
 package com.andretietz.houston
 
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 /**
  * The main library class. Initialize the library and send messages to all tracking tools.
@@ -26,7 +28,8 @@ import kotlinx.coroutines.launch
  */
 class Houston private constructor(
   private val missionControl: Set<TrackingTool>,
-  private val coroutineScope: CoroutineScope
+  private val coroutineScope: CoroutineScope,
+  private val errorHandler: CoroutineExceptionHandler
 ) {
 
   class Builder internal constructor(private val coroutineScope: CoroutineScope) {
@@ -41,19 +44,15 @@ class Houston private constructor(
     /**
      * After adding all [TrackingTool]s, you want to initialize the library.
      */
-    fun launch() {
-      INSTANCE = Houston(trackingTools, coroutineScope)
+    fun launch(errorHandler: CoroutineExceptionHandler = DEFAULT_EXCEPTION_HANDLER) {
+      INSTANCE = Houston(trackingTools, coroutineScope, errorHandler)
     }
   }
 
   internal fun sendFinally(message: Message) {
-    coroutineScope.launch {
-      missionControl.forEach {
-        try {
-          it.send(message)
-        } catch (error: Exception) {
-          error.printStackTrace()
-        }
+    coroutineScope.launch(errorHandler) {
+      supervisorScope {
+        missionControl.forEach { launch { it.send(message) } }
       }
     }
   }
@@ -61,6 +60,9 @@ class Houston private constructor(
   companion object {
 
     private lateinit var INSTANCE: Houston
+
+    private val DEFAULT_EXCEPTION_HANDLER =
+      CoroutineExceptionHandler { _, error -> error.printStackTrace() }
 
     /**
      * Creates a Message in preparation to send.
@@ -84,8 +86,7 @@ class Houston private constructor(
      */
     @JvmStatic
     @JvmOverloads
-    fun init(
-      coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    ) = Builder(coroutineScope)
+    fun init(coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) =
+      Builder(coroutineScope)
   }
 }
