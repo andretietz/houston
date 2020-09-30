@@ -4,12 +4,8 @@ on: [pull_request]
 
 jobs:
   build:
-    name: JDK ${{ matrix.java_version }}
+    name: PR Build
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        java_version: [1.8]
 
     steps:
       - name: Checkout
@@ -18,10 +14,10 @@ jobs:
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1
 
-      - name: Install JDK ${{ matrix.java_version }}
+      - name: Install JDK
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ matrix.java_version }}
+          java-version: 1.8
 
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
