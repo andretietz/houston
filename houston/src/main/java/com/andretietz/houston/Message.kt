@@ -16,9 +16,14 @@
 package com.andretietz.houston
 
 /**
- * Message that can be sent to all tracking tools registered with [Houston.add] during the initialization.
+ * Message that can be sent to all tracking tools registered with [Houston.Builder.add] during the initialization.
  */
-data class Message internal constructor(val id: String) {
+data class Message internal constructor(
+  /**
+   * identifier of the message sent to the [TrackingTool]s.
+   */
+  val id: String
+) {
 
   /**
    * Map containing optional data, that is internally mutable.
@@ -45,7 +50,7 @@ data class Message internal constructor(val id: String) {
   }
 
   /**
-   * Forwards this message to all tracking tools provided using [Houston.add].
+   * Forwards this message to all tracking tools provided using [Houston.Builder.add].
    */
   fun over() = Houston.send(this)
 }
