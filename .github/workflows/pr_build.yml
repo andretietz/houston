@@ -19,7 +19,7 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Build with Gradle
+      - name: Build
         run: |
           version=$(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2 )
           if [[ $version != *"-SNAPSHOT"* ]]; then
