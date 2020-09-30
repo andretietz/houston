@@ -1,6 +1,7 @@
 name: Build
 
-on: [pull_request]
+#on: [pull_request]
+on: [push]
 
 jobs:
   build:
@@ -23,5 +24,14 @@ jobs:
         with:
           java-version: ${{ matrix.java_version }}
 
-      - name: Build with Gradle
-        run: ./gradlew build --stacktrace
+      - name: Extract version
+        run: |
+          echo ::set-env name=VERSION_NAME::$(cat gradle.properties | grep -w "VERSION_NAME" | cut -d'=' -f2)
+      - name: Remove "-SNAPSHOT" from Version
+        run: |
+          sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME={$env.VERSION_NAME}/g" gradle.properties
+        if: endsWith(env.VERSION_NAME, '-SNAPSHOT')
+
+
+#      - name: Build with Gradle
+#        run: ./gradlew build --stacktrace
