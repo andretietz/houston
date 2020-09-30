@@ -31,7 +31,7 @@ jobs:
 
       - name: Remove "-SNAPSHOT" from Version
         run: |
-          sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME=$($env.VERSION_NAME)/g" gradle.properties
+          sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME=${env.VERSION_NAME}/g" gradle.properties
           cat gradle.properties
 
 
