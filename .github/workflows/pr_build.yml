@@ -1,7 +1,6 @@
 name: Build
 
-#on: [pull_request]
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
@@ -24,19 +23,5 @@ jobs:
         with:
           java-version: ${{ matrix.java_version }}
 
-#      - name: Remove "-SNAPSHOT" from Version
-#        run: |
-#          version=$(grep "VERSION_NAME" "./gradle.properties"|cut -d'=' -f2| sed 's/-SNAPSHOT//g')
-#          sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME=$version/g" gradle.properties
-
-      - name: Retrieve version
-        run: |
-          echo ::set-env name=VERSION_NAME::$(cat gradle.properties | grep -w "VERSION_NAME" | cut -d'=' -f2)
-      - name: Execute if...
-        run: echo "You cannot see me..."
-        if: endsWith(env.VERSION_NAME, '-SNAPSHOT')
-
-
-
-#      - name: Build with Gradle
-#        run: ./gradlew build --stacktrace
+      - name: Build with Gradle
+        run: ./gradlew build --stacktrace
