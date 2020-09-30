@@ -2,8 +2,6 @@ name: Release build
 
 on:
   push:
-    branches:
-      - master
     tags:
       - '*.*.*'
 
@@ -24,21 +22,23 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Extract version and remove -SNAPSHOT
+      - name: Building Release
         run: |
+          version=$(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2 )
+          if [[ $version != *"-SNAPSHOT"* ]]; then
+            echo "Version string MUST contain \"-SNAPSHOT\"!"
+            exit 1;
+          fi
           version=$(grep "VERSION_NAME" "./gradle.properties"|cut -d'=' -f2| sed 's/-SNAPSHOT//g')
           sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME=$version/g" gradle.properties
-          echo ::set-env name=VERSION_NAME::$version
-
-      - name: Upload release
-        run: ./gradlew uploadArchives --no-daemon --no-parallel
-        if: !endsWith(env.VERSION_NAME, '-SNAPSHOT')
+          echo "Building Release Version: $version"
+          ./gradlew uploadArchives --info --stacktrace --no-daemon --no-parallel --warning-mode all
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
 
-      - name: Publish release
-        run: ./gradlew closeAndReleaseRepoistory --no-daemon --no-parallel
+      - name: Publish Release
+        run: ./gradlew closeAndReleaseRepoistory --no-daemon --no-parallel --warning-mode all
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
