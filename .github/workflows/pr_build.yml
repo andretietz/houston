@@ -27,7 +27,8 @@ jobs:
       - name: Extract version
         run: |
           echo ::set-env name=VERSION_NAME::$(cat gradle.properties | grep -w "VERSION_NAME" | cut -d'=' -f2)
-          echo $env.VERSION_NAME
+          echo $(echo env.VERSION_NAME)
+          ls -la gradle.properties
 
       - name: Remove "-SNAPSHOT" from Version
         run: |
