@@ -17,7 +17,7 @@ package com.andretietz.houston
 
 /**
  * A TrackingTool represents tool you want to track into. So whenever you want to add a new tool, make sure you
- * implement this interface and initialize it, within [Houston.add].
+ * implement this interface and initialize it, within [Houston.Builder.add].
  */
 interface TrackingTool {
   /**

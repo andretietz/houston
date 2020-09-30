@@ -15,11 +15,7 @@
  */
 package com.andretietz.houston
 
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.*
 
 /**
  * The main library class. Initialize the library and send messages to all tracking tools.
@@ -32,6 +28,9 @@ class Houston private constructor(
   private val errorHandler: CoroutineExceptionHandler
 ) {
 
+  /**
+   * A Builder to setup [Houston].
+   */
   class Builder internal constructor(private val coroutineScope: CoroutineScope) {
     private val trackingTools: MutableSet<TrackingTool> = HashSet()
 
