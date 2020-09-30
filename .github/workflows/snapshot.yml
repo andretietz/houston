@@ -27,7 +27,7 @@ jobs:
           echo ::set-env name=VERSION_NAME::$(cat gradle.properties | grep -w "VERSION_NAME" | cut -d'=' -f2)
 
       - name: Publish snapshot
-        run: ./gradlew uploadArchives --no-daemon --no-parallel
+        run: ./gradlew uploadArchives --no-daemon --no-parallel --warning-mode all
         if: endsWith(env.VERSION_NAME, '-SNAPSHOT')
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
