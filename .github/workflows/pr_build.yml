@@ -28,10 +28,7 @@ jobs:
         run: |
           version=$(grep "VERSION_NAME" "./gradle.properties"|cut -d'=' -f2| sed 's/-SNAPSHOT//g')
           sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME=$version/g" gradle.properties
-          cat gradle.properties
         if: !endsWith(env.VERSION_NAME, '-SNAPSHOT')
-
-
 
 #      - name: Build with Gradle
 #        run: ./gradlew build --stacktrace
