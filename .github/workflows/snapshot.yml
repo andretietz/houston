@@ -1,4 +1,4 @@
-name: Build
+name: Snapshot build
 
 on:
   push:
