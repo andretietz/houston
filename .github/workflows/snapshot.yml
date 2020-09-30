@@ -1,9 +1,11 @@
 name: Snapshot build
 
-on:
-  push:
-    branches:
-      - master
+#on:
+#  push:
+#    branches:
+#      - master
+# temporary until problem with snapshot upload solved
+on: [pull_request]
 
 jobs:
   build:
