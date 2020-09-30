@@ -24,10 +24,10 @@ jobs:
         with:
           java-version: ${{ matrix.java_version }}
 
-      - name: Remove "-SNAPSHOT" from Version
-        run: |
-          version=$(grep "VERSION_NAME" "./gradle.properties"|cut -d'=' -f2| sed 's/-SNAPSHOT//g')
-          sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME=$version/g" gradle.properties
+#      - name: Remove "-SNAPSHOT" from Version
+#        run: |
+#          version=$(grep "VERSION_NAME" "./gradle.properties"|cut -d'=' -f2| sed 's/-SNAPSHOT//g')
+#          sed -i'' "s/VERSION_NAME=.*-SNAPSHOT/VERSION_NAME=$version/g" gradle.properties
 
       - name: Retrieve version
         run: |
