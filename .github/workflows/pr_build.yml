@@ -19,5 +19,12 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Build with Gradle
-        run: ./gradlew build --stacktrace
+      - name: Build
+        run: |
+          version=$(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2 )
+          if [[ $version != *"-SNAPSHOT"* ]]; then
+            echo "Version string MUST contain \"-SNAPSHOT\"!"
+            exit 1;
+          fi
+          echo "Next Version: $version"
+          ./gradlew build --stacktrace --warning-mode all
