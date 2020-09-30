@@ -26,5 +26,5 @@ jobs:
             echo "Version string MUST contain \"-SNAPSHOT\"!"
             exit 1;
           fi
+          echo "Next Version: $version"
           ./gradlew build --stacktrace --warning-mode all
-          exit 1;
