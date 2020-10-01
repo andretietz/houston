@@ -14,4 +14,9 @@ dependencies {
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
-apply from: rootProject.file('gradle/publish.gradle')
+apply plugin: "com.vanniktech.maven.publish"
+//mavenPublish {
+//    nexus {
+//        stagingProfile = "com.andretietz"
+//    }
+//}

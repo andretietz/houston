@@ -1,7 +1,0 @@
-apply plugin: "com.vanniktech.maven.publish"
-
-mavenPublish {
-    nexus {
-        stagingProfile = "com.andretietz"
-    }
-}
