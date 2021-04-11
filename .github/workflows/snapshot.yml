@@ -22,7 +22,7 @@ jobs:
       - name: Install JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 1.13
+          java-version: 1.8
 
       - name: Building Snapshot
         run: |
@@ -32,9 +32,7 @@ jobs:
             exit 1;
           fi
           echo "Building Snapshot Version: $version"
-          ./gradlew clean build --no-daemon --no-parallel
-          ls -la
-          ./gradlew uploadArchives --no-daemon --no-parallel
+          ./gradlew publish --no-daemon --no-parallel --stacktrace --warning-mode all
         env:
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: '${{ secrets.SONATYPE_NEXUS_USERNAME }}'
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: '${{ secrets.SONATYPE_NEXUS_PASSWORD }}'
+          ORG_GRADLE_PROJECT_mavenCentralRepositoryUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralRepositoryPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
