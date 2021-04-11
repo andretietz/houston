@@ -1,8 +1,6 @@
 # Houston
 A kotlin library to abstract tracking tools.
 
-[![Build Status](https://app.bitrise.io/app/bd134453be936cfc/status.svg?token=grZzflNzAcMfNMJymNRVHw&branch=master)](https://app.bitrise.io/app/bd134453be936cfc)
-
 ## How to use
 ### Add the libary from `mavenCentral`
 ```groovy
@@ -65,7 +63,7 @@ Initially I used this in android projects, but since it doesn't have any Android
 every Java/Kotlin project. 
 
 ## About
-The name and usage of the library have analogies to the NASA Space missions.
+The name and usage of the library has analogies to NASA Space missions.
 
 A tracking tool relates to a crew-member of mission control and the application relates
 to a spaceship that sends data to mission control.
