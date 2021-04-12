@@ -4,7 +4,7 @@ A kotlin library to abstract tracking tools.
 ## How to use
 ### Add the libary from `mavenCentral`
 ```groovy
-implement("com.andretietz.houston:houston:x.y.z")
+implementation "com.andretietz.houston:houston:x.y.z"
 ```
 ### Initialize Houston
 Whenever you forgot to initialize it, no events will be sent. This could be used 

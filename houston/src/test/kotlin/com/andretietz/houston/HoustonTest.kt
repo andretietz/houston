@@ -84,12 +84,12 @@ class HoustonTest {
     val williamRPouge =
       mockk<TrackingTool> { every { send(any()) } throws IllegalStateException("An exception appeared") }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
-
+    var errorSlot:Throwable? = null
     Houston.init(this)
       .add(jackRLousma)
       .add(williamRPouge)
       .add(vanceDBrand)
-      .launch(CoroutineExceptionHandler { _, _ -> })
+      .launch(CoroutineExceptionHandler { _, error -> errorSlot = error})
 
     Houston.send(ID)
       .with(KEY, VALUE)
@@ -110,6 +110,10 @@ class HoustonTest {
     assert(messageFromWilliam.captured.data[KEY] == VALUE)
     assert(messageFromVance.captured.id == ID)
     assert(messageFromVance.captured.data[KEY] == VALUE)
+
+    assert(errorSlot != null)
+    assert(errorSlot is IllegalStateException)
+    assert(errorSlot?.message == "An exception appeared")
   }
 
   companion object {

@@ -50,10 +50,8 @@ class Houston private constructor(
   }
 
   internal fun sendFinally(message: Message) {
-    coroutineScope.launch(errorHandler) {
-      supervisorScope {
-        missionControl.forEach { launch { it.send(message) } }
-      }
+    coroutineScope.launch(errorHandler + Dispatchers.IO) {
+      missionControl.forEach { it.send(message) }
     }
   }
 
@@ -86,7 +84,7 @@ class Houston private constructor(
      */
     @JvmStatic
     @JvmOverloads
-    fun init(coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) =
+    fun init(coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default)) =
       Builder(coroutineScope)
   }
 }
