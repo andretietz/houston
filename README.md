@@ -6,6 +6,19 @@ A kotlin library to abstract tracking tools.
 ```groovy
 implementation "com.andretietz.houston:houston:x.y.z"
 ```
+### Snapshot versions
+
+Snapshot versions are available, by adding the mavenCentral snapshot repository
+
+```groovy
+maven { url { "https://oss.sonatype.org/content/repositories/snapshots" } }
+```
+
+and adding `-SNAPSHOT` to the version number:
+
+```groovy
+implementation "com.andretietz.houston:houston:x.y.z-SNAPSHOT'
+```
 ### Initialize Houston
 Whenever you forgot to initialize it, no events will be sent. This could be used 
 e.g. to avoid tracking on a development environment. 
