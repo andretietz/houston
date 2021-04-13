@@ -29,7 +29,7 @@ Houston.init(optionalCoroutineScope)
   .launch(optionalCoroutineExceptionHandler)
 ```
 
-### Fire events
+### Trigger events
 Example for login success or not:
 ```kotlin
 ...
@@ -61,6 +61,9 @@ class WhateverAnalyticsTrackingTool(private val whateverAnalytics: WhateverAnaly
   }
 }
 ```
+
+### Disable tracking during runtime
+Sometimes you need to enable or disable tracking during runtime
 
 ## Intention
 Whenever you're working on a product (probably not that much, when working on projects),

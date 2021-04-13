@@ -15,7 +15,10 @@
  */
 package com.andretietz.houston
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * The main library class. Initialize the library and send messages to all tracking tools.
@@ -59,6 +62,13 @@ class Houston private constructor(
 
     private lateinit var INSTANCE: Houston
 
+    /**
+     * enabling/disabling [Houston] will avoid sending events.
+     * Can be used to enable/disable tracking when the user wants to disable/enable it.
+     */
+    @JvmStatic
+    var enabled: Boolean = true
+
     private val DEFAULT_EXCEPTION_HANDLER =
       CoroutineExceptionHandler { _, error -> error.printStackTrace() }
 
@@ -72,7 +82,7 @@ class Houston private constructor(
 
     @JvmStatic
     internal fun send(message: Message) {
-      if (this::INSTANCE.isInitialized) {
+      if (this::INSTANCE.isInitialized && enabled) {
         INSTANCE.sendFinally(message)
       }
     }

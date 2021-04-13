@@ -1,4 +1,5 @@
 # 1.0.2 ()
+* enabling and disabling during runtime using `Houston.enabled = true/false`
 # 1.0.1 (2020-09-28)
 * Small Java fix.
 # 1.0.0 (2020-09-28)
