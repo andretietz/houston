@@ -20,6 +20,17 @@ package com.andretietz.houston
  * implement this interface and initialize it, within [Houston.Builder.add].
  */
 interface TrackingTool {
+
+  /**
+   *
+   */
+  var initialized: Boolean
+
+  /**
+   *
+   */
+  fun initialize()
+
   /**
    * Whenever there was a message sent using [Houston.send], this message is forwarded
    * into the implementation of this.

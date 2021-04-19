@@ -28,13 +28,29 @@ import kotlinx.coroutines.launch
 class Houston private constructor(
   private val missionControl: Set<TrackingTool>,
   private val coroutineScope: CoroutineScope,
-  private val errorHandler: CoroutineExceptionHandler
+  private val errorHandler: CoroutineExceptionHandler,
+  private var trackingEnabled: Boolean,
+  private val useMessageBuffer: Boolean
 ) {
+
+  private val messageBuffer by lazy { mutableListOf<Message>() }
+
+  private fun enableTracking(enabled: Boolean) {
+    trackingEnabled = enabled
+    if (useMessageBuffer) {
+      coroutineScope.launch(errorHandler + Dispatchers.IO) {
+        messageBuffer.forEach { message ->
+          missionControl.forEach { sendSingleMessage(it, message) }
+        }
+      }
+    }
+  }
 
   /**
    * A Builder to setup [Houston].
    */
-  class Builder internal constructor(private val coroutineScope: CoroutineScope) {
+  class Builder {
+
     private val trackingTools: MutableSet<TrackingTool> = HashSet()
 
     /**
@@ -45,29 +61,47 @@ class Houston private constructor(
 
     /**
      * After adding all [TrackingTool]s, you want to initialize the library.
+     *
+     * @param coroutineScope used for reporting async.
+     * @param trackingEnabled if tracking is enabled on after this init call or not. default: `false`
+     * @param messageBuffer if a buffer for messages should be used. default: `false`
+     * @param errorHandler that handles crashes when sending the event throws an exception.
      */
     @JvmOverloads
-    fun launch(errorHandler: CoroutineExceptionHandler = DEFAULT_EXCEPTION_HANDLER) {
-      INSTANCE = Houston(trackingTools, coroutineScope, errorHandler)
+    fun launch(
+      coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+      trackingEnabled: Boolean = false,
+      messageBuffer: Boolean = false,
+      errorHandler: CoroutineExceptionHandler = DEFAULT_EXCEPTION_HANDLER
+    ) {
+      INSTANCE = Houston(
+        trackingTools,
+        coroutineScope,
+        errorHandler,
+        trackingEnabled,
+        messageBuffer
+      )
     }
   }
 
-  internal fun sendFinally(message: Message) {
+  private fun sendFinally(message: Message) {
     coroutineScope.launch(errorHandler + Dispatchers.IO) {
-      missionControl.forEach { it.send(message) }
+      if (trackingEnabled) {
+        missionControl.forEach { sendSingleMessage(it, message) }
+      } else if (useMessageBuffer) {
+        messageBuffer.add(message)
+      }
     }
+  }
+
+  private fun sendSingleMessage(trackingTool: TrackingTool, message: Message) {
+    if (!trackingTool.initialized) trackingTool.initialize()
+    trackingTool.send(message)
   }
 
   companion object {
 
     private lateinit var INSTANCE: Houston
-
-    /**
-     * enabling/disabling [Houston] will avoid sending events.
-     * Can be used to enable/disable tracking when the user wants to disable/enable it.
-     */
-    @JvmStatic
-    var enabled: Boolean = true
 
     private val DEFAULT_EXCEPTION_HANDLER =
       CoroutineExceptionHandler { _, error -> error.printStackTrace() }
@@ -80,21 +114,28 @@ class Houston private constructor(
     @JvmStatic
     fun send(id: String) = Message(id)
 
+    /**
+     * enabling/disabling [Houston] will avoid sending events.
+     * Can be used to enable/disable tracking when the user wants to disable/enable it.
+     */
+    @JvmStatic
+    fun setEnabled(enabled: Boolean) {
+      if (this::INSTANCE.isInitialized) {
+        INSTANCE.enableTracking(enabled)
+      }
+    }
+
     @JvmStatic
     internal fun send(message: Message) {
-      if (this::INSTANCE.isInitialized && enabled) {
+      if (this::INSTANCE.isInitialized) {
         INSTANCE.sendFinally(message)
       }
     }
 
     /**
      * Creates a [Builder] to initialize the library.
-     *
-     * @param coroutineScope used for reporting async.
      */
     @JvmStatic
-    @JvmOverloads
-    fun init(coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default)) =
-      Builder(coroutineScope)
+    fun init() = Builder()
   }
 }

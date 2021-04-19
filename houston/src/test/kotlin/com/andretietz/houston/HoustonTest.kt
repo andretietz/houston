@@ -51,11 +51,14 @@ class HoustonTest {
     val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
 
-    Houston.init(this)
+    Houston.init()
       .add(jackRLousma)
       .add(williamRPouge)
       .add(vanceDBrand)
-      .launch()
+      .launch(
+        coroutineScope = this,
+        trackingEnabled = true
+      )
 
     Houston.send(ID)
       .with(KEY, VALUE)
@@ -85,11 +88,15 @@ class HoustonTest {
       mockk<TrackingTool> { every { send(any()) } throws IllegalStateException("An exception appeared") }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
     var errorSlot:Throwable? = null
-    Houston.init(this)
+    Houston.init()
       .add(jackRLousma)
       .add(williamRPouge)
       .add(vanceDBrand)
-      .launch(CoroutineExceptionHandler { _, error -> errorSlot = error})
+      .launch(
+        coroutineScope = this,
+        trackingEnabled = true,
+        errorHandler = CoroutineExceptionHandler { _, error -> errorSlot = error}
+      )
 
     Houston.send(ID)
       .with(KEY, VALUE)

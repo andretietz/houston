@@ -1,5 +1,6 @@
 package com.andretietz.houston;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 public class HoustonJavaTest {
@@ -10,7 +11,26 @@ public class HoustonJavaTest {
   @Test
   public void simpleTest() {
     Houston.init()
-      .add(message -> {
+      .add(new TrackingTool() {
+        @Override
+        public boolean getInitialized() {
+          return false;
+        }
+
+        @Override
+        public void setInitialized(boolean initialized) {
+
+        }
+
+        @Override
+        public void initialize() {
+
+        }
+
+        @Override
+        public void send(@NotNull Message message) {
+
+        }
       })
       .launch();
 
