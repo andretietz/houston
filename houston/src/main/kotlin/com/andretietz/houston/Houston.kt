@@ -15,10 +15,7 @@
  */
 package com.andretietz.houston
 
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 /**
@@ -36,7 +33,14 @@ class Houston private constructor(
   private fun sendFinally(message: Message) {
     if (trackingEnabled) {
       coroutineScope.launch(errorHandler + Dispatchers.IO) {
-        missionControl.forEach { it.send(message) }
+        supervisorScope {
+          missionControl.forEach {
+            launch {
+              it.send(message)
+              println("send message to :$it")
+            }
+          }
+        }
       }
     }
   }

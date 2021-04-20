@@ -11,27 +11,7 @@ public class HoustonJavaTest {
   @Test
   public void simpleTest() {
     Houston.init()
-      .add(new TrackingTool() {
-        @Override
-        public boolean getInitialized() {
-          return false;
-        }
-
-        @Override
-        public void setInitialized(boolean initialized) {
-
-        }
-
-        @Override
-        public void initialize() {
-
-        }
-
-        @Override
-        public void send(@NotNull Message message) {
-
-        }
-      })
+      .add(message -> {})
       .launch();
 
     Houston.send("test")

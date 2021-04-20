@@ -79,16 +79,18 @@ class HoustonTest {
   @Test
   fun `Sending a message and crash`() = runBlockingTest {
     val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
-    val williamRPouge =
-      mockk<TrackingTool> { every { send(any()) } throws IllegalStateException("An exception appeared") }
+    val crash2 = mockk<TrackingTool> { every { send(any()) } throws IllegalStateException() }
+    val williamRPouge = mockk<TrackingTool> { every { send(any()) } throws IllegalStateException() }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
+
 
     var errorSlot: Throwable? = null
 
     Houston.init()
-      .add(jackRLousma)
       .add(williamRPouge)
+      .add(jackRLousma)
       .add(vanceDBrand)
+      .add(crash2)
       .launch(
         coroutineScope = this,
         trackingEnabled = true,
@@ -107,6 +109,7 @@ class HoustonTest {
     verify(exactly = 1) { jackRLousma.send(capture(messageFromJack)) }
     verify(exactly = 1) { williamRPouge.send(capture(messageFromWilliam)) }
     verify(exactly = 1) { vanceDBrand.send(capture(messageFromVance)) }
+    verify(exactly = 1) { crash2.send(capture(messageFromVance)) }
 
     assert(messageFromJack.captured.id == ID)
     assert(messageFromJack.captured.data[KEY] == VALUE)
@@ -117,7 +120,6 @@ class HoustonTest {
 
     assert(errorSlot != null)
     assert(errorSlot is IllegalStateException)
-    assert(errorSlot?.message == "An exception appeared")
   }
 
   companion object {
