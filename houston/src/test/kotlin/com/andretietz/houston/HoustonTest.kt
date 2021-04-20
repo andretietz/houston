@@ -1,11 +1,6 @@
 package com.andretietz.houston
 
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
+import io.mockk.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -87,7 +82,9 @@ class HoustonTest {
     val williamRPouge =
       mockk<TrackingTool> { every { send(any()) } throws IllegalStateException("An exception appeared") }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
-    var errorSlot:Throwable? = null
+
+    var errorSlot: Throwable? = null
+
     Houston.init()
       .add(jackRLousma)
       .add(williamRPouge)
@@ -95,7 +92,7 @@ class HoustonTest {
       .launch(
         coroutineScope = this,
         trackingEnabled = true,
-        errorHandler = CoroutineExceptionHandler { _, error -> errorSlot = error}
+        errorHandler = CoroutineExceptionHandler { _, error -> errorSlot = error }
       )
 
     Houston.send(ID)

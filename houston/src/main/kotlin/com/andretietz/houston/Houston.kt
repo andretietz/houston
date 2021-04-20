@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
 /**
  * The main library class. Initialize the library and send messages to all tracking tools.
  *
@@ -29,82 +30,20 @@ class Houston private constructor(
   private val missionControl: Set<TrackingTool>,
   private val coroutineScope: CoroutineScope,
   private val errorHandler: CoroutineExceptionHandler,
-  private var trackingEnabled: Boolean,
-  private val useMessageBuffer: Boolean
+  private var trackingEnabled: Boolean
 ) {
 
-  private val messageBuffer by lazy { mutableListOf<Message>() }
-
-  private fun enableTracking(enabled: Boolean) {
-    trackingEnabled = enabled
-    if (useMessageBuffer) {
-      coroutineScope.launch(errorHandler + Dispatchers.IO) {
-        messageBuffer.forEach { message ->
-          missionControl.forEach { sendSingleMessage(it, message) }
-        }
-      }
-    }
-  }
-
-  /**
-   * A Builder to setup [Houston].
-   */
-  class Builder {
-
-    private val trackingTools: MutableSet<TrackingTool> = HashSet()
-
-    /**
-     * Registers a [TrackingTool].
-     *
-     */
-    fun add(trackingTool: TrackingTool): Builder = apply { this.trackingTools.add(trackingTool) }
-
-    /**
-     * After adding all [TrackingTool]s, you want to initialize the library.
-     *
-     * @param coroutineScope used for reporting async.
-     * @param trackingEnabled if tracking is enabled on after this init call or not. default: `false`
-     * @param messageBuffer if a buffer for messages should be used. default: `false`
-     * @param errorHandler that handles crashes when sending the event throws an exception.
-     */
-    @JvmOverloads
-    fun launch(
-      coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
-      trackingEnabled: Boolean = false,
-      messageBuffer: Boolean = false,
-      errorHandler: CoroutineExceptionHandler = DEFAULT_EXCEPTION_HANDLER
-    ) {
-      INSTANCE = Houston(
-        trackingTools,
-        coroutineScope,
-        errorHandler,
-        trackingEnabled,
-        messageBuffer
-      )
-    }
-  }
-
   private fun sendFinally(message: Message) {
-    coroutineScope.launch(errorHandler + Dispatchers.IO) {
-      if (trackingEnabled) {
-        missionControl.forEach { sendSingleMessage(it, message) }
-      } else if (useMessageBuffer) {
-        messageBuffer.add(message)
+    if (trackingEnabled) {
+      coroutineScope.launch(errorHandler + Dispatchers.IO) {
+        missionControl.forEach { it.send(message) }
       }
     }
-  }
-
-  private fun sendSingleMessage(trackingTool: TrackingTool, message: Message) {
-    if (!trackingTool.initialized) trackingTool.initialize()
-    trackingTool.send(message)
   }
 
   companion object {
 
     private lateinit var INSTANCE: Houston
-
-    private val DEFAULT_EXCEPTION_HANDLER =
-      CoroutineExceptionHandler { _, error -> error.printStackTrace() }
 
     /**
      * Creates a Message in preparation to send.
@@ -121,7 +60,7 @@ class Houston private constructor(
     @JvmStatic
     fun setEnabled(enabled: Boolean) {
       if (this::INSTANCE.isInitialized) {
-        INSTANCE.enableTracking(enabled)
+        INSTANCE.trackingEnabled = enabled
       }
     }
 
@@ -137,5 +76,41 @@ class Houston private constructor(
      */
     @JvmStatic
     fun init() = Builder()
+  }
+
+  /**
+   * A Builder to setup [Houston].
+   */
+  class Builder {
+
+    private val trackingTools: MutableSet<TrackingTool> = HashSet()
+
+    /**
+     * Registers a [TrackingTool].
+     *
+     */
+    fun add(trackingTool: TrackingTool): Builder = apply { trackingTools.add(trackingTool) }
+
+    /**
+     * After adding all [TrackingTool]s, you want to initialize the library.
+     *
+     * @param coroutineScope used for reporting async.
+     * @param trackingEnabled if tracking is enabled on after this init call or not. default: `false`
+     * @param errorHandler that handles crashes when sending the event throws an exception.
+     */
+    @JvmOverloads
+    fun launch(
+      coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+      trackingEnabled: Boolean = false,
+      errorHandler: CoroutineExceptionHandler =
+        CoroutineExceptionHandler { _, error -> error.printStackTrace() }
+    ) {
+      INSTANCE = Houston(
+        trackingTools,
+        coroutineScope,
+        errorHandler,
+        trackingEnabled
+      )
+    }
   }
 }
