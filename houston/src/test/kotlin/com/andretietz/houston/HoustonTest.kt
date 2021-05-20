@@ -1,11 +1,6 @@
 package com.andretietz.houston
 
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
+import io.mockk.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -33,7 +28,7 @@ class HoustonTest {
   }
 
   @Test
-  fun `No message is sent, when Houston not initialized`() {
+  fun `No message is sent, when Houston not initialized`()  = runBlockingTest {
     val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
     val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
@@ -51,11 +46,14 @@ class HoustonTest {
     val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
 
-    Houston.init(this)
+    Houston.init()
       .add(jackRLousma)
       .add(williamRPouge)
       .add(vanceDBrand)
-      .launch()
+      .launch(
+        coroutineScope = this,
+        trackingEnabled = true
+      )
 
     Houston.send(ID)
       .with(KEY, VALUE)
@@ -81,15 +79,23 @@ class HoustonTest {
   @Test
   fun `Sending a message and crash`() = runBlockingTest {
     val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
-    val williamRPouge =
-      mockk<TrackingTool> { every { send(any()) } throws IllegalStateException("An exception appeared") }
+    val crash2 = mockk<TrackingTool> { every { send(any()) } throws IllegalStateException() }
+    val williamRPouge = mockk<TrackingTool> { every { send(any()) } throws IllegalStateException() }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
-    var errorSlot:Throwable? = null
-    Houston.init(this)
-      .add(jackRLousma)
+
+
+    var errorSlot: Throwable? = null
+
+    Houston.init()
       .add(williamRPouge)
+      .add(jackRLousma)
       .add(vanceDBrand)
-      .launch(CoroutineExceptionHandler { _, error -> errorSlot = error})
+      .add(crash2)
+      .launch(
+        coroutineScope = this,
+        trackingEnabled = true,
+        errorHandler = CoroutineExceptionHandler { _, error -> errorSlot = error }
+      )
 
     Houston.send(ID)
       .with(KEY, VALUE)
@@ -113,7 +119,6 @@ class HoustonTest {
 
     assert(errorSlot != null)
     assert(errorSlot is IllegalStateException)
-    assert(errorSlot?.message == "An exception appeared")
   }
 
   companion object {

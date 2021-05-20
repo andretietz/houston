@@ -17,5 +17,7 @@ public class HoustonJavaTest {
     Houston.send("test")
       .with("foo", "bar")
       .over();
+
+    Houston.setEnabled(false);
   }
 }

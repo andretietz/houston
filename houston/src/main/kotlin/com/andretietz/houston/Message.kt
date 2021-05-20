@@ -36,13 +36,18 @@ data class Message internal constructor(
   val data: Map<String, String> = _data
 
   /**
+   * timestamp when the message was created.
+   */
+  val timestamp: Long = System.currentTimeMillis()
+
+  /**
    * Add key-value pairs as optional data to the message object.
    *
    * @param key you want to edit
    * @param value if not `null` it will add the key value pair. If it is `null` it removes it.
    */
   fun with(key: String, value: String?): Message = apply {
-    if(value != null) {
+    if (value != null) {
       _data[key] = value
     } else {
       _data.remove(key)
