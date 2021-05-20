@@ -15,8 +15,11 @@
  */
 package com.andretietz.houston
 
-import kotlinx.coroutines.*
-
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 /**
  * The main library class. Initialize the library and send messages to all tracking tools.
@@ -30,17 +33,10 @@ class Houston private constructor(
   private var trackingEnabled: Boolean
 ) {
 
-  private fun sendFinally(message: Message) {
+  private fun sendFinally(message: Message) = coroutineScope.launch {
     if (trackingEnabled) {
-      coroutineScope.launch(errorHandler + Dispatchers.IO) {
-        supervisorScope {
-          missionControl.forEach {
-            launch {
-              it.send(message)
-              println("send message to :$it")
-            }
-          }
-        }
+      supervisorScope {
+        missionControl.forEach { launch(errorHandler + Dispatchers.IO) { it.send(message) } }
       }
     }
   }

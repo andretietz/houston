@@ -1,6 +1,5 @@
 package com.andretietz.houston;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 public class HoustonJavaTest {
@@ -11,7 +10,8 @@ public class HoustonJavaTest {
   @Test
   public void simpleTest() {
     Houston.init()
-      .add(message -> {})
+      .add(message -> {
+      })
       .launch();
 
     Houston.send("test")

@@ -28,7 +28,7 @@ class HoustonTest {
   }
 
   @Test
-  fun `No message is sent, when Houston not initialized`() {
+  fun `No message is sent, when Houston not initialized`()  = runBlockingTest {
     val jackRLousma = mockk<TrackingTool> { every { send(any()) } just Runs }
     val williamRPouge = mockk<TrackingTool> { every { send(any()) } just Runs }
     val vanceDBrand = mockk<TrackingTool> { every { send(any()) } just Runs }
@@ -109,7 +109,6 @@ class HoustonTest {
     verify(exactly = 1) { jackRLousma.send(capture(messageFromJack)) }
     verify(exactly = 1) { williamRPouge.send(capture(messageFromWilliam)) }
     verify(exactly = 1) { vanceDBrand.send(capture(messageFromVance)) }
-    verify(exactly = 1) { crash2.send(capture(messageFromVance)) }
 
     assert(messageFromJack.captured.id == ID)
     assert(messageFromJack.captured.data[KEY] == VALUE)
