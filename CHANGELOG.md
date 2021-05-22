@@ -1,4 +1,5 @@
-# 1.0.2 ()
+# 1.0.3 ()
+# 1.0.2 (2021-05-21)
 * enabling and disabling during runtime using `Houston.enabled = true/false
 * enhancing tracking in background 
 # 1.0.1 (2020-09-28)
